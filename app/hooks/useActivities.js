@@ -1,42 +1,67 @@
 'use client';
 import { useState, useEffect } from 'react';
+import {
+    collection,
+    onSnapshot,
+    addDoc,
+    deleteDoc,
+    updateDoc,
+    doc,
+    serverTimestamp,
+    query,
+    orderBy,
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
-const STORAGE_KEY = 'curiosity_cultivator_activities';
+const COLLECTION = 'activities';
 
 export function useActivities() {
     const [activities, setActivities] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) setActivities(JSON.parse(stored));
-        } catch (e) {
-            console.error('Failed to load activities', e);
-        }
-        setLoaded(true);
+        // Real-time listener — updates on all devices instantly
+        const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(
+            q,
+            (snapshot) => {
+                const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+                setActivities(data);
+                setLoaded(true);
+            },
+            (error) => {
+                console.error('Firestore listener error:', error);
+                setLoaded(true);
+            }
+        );
+        return () => unsubscribe();
     }, []);
 
-    const saveActivities = (updated) => {
-        setActivities(updated);
+    const addActivity = async (activity) => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            await addDoc(collection(db, COLLECTION), {
+                ...activity,
+                createdAt: serverTimestamp(),
+            });
         } catch (e) {
-            console.error('Failed to save activities', e);
+            console.error('Failed to add activity', e);
         }
     };
 
-    const addActivity = (activity) => {
-        const updated = [{ ...activity, id: Date.now().toString() }, ...activities];
-        saveActivities(updated);
+    const deleteActivity = async (id) => {
+        try {
+            await deleteDoc(doc(db, COLLECTION, id));
+        } catch (e) {
+            console.error('Failed to delete activity', e);
+        }
     };
 
-    const deleteActivity = (id) => {
-        saveActivities(activities.filter(a => a.id !== id));
-    };
-
-    const updateActivity = (id, changes) => {
-        saveActivities(activities.map(a => a.id === id ? { ...a, ...changes } : a));
+    const updateActivity = async (id, changes) => {
+        try {
+            await updateDoc(doc(db, COLLECTION, id), changes);
+        } catch (e) {
+            console.error('Failed to update activity', e);
+        }
     };
 
     return { activities, addActivity, deleteActivity, updateActivity, loaded };

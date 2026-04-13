@@ -56,7 +56,7 @@ export default function AddPage() {
 
     const typesSelected = ['explorer', 'artist', 'detective', 'mapmaker'].filter(t => form[t]).length;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.title.trim()) { setError('Please enter an activity title.'); return; }
         setError('');
@@ -67,7 +67,7 @@ export default function AddPage() {
             dateAdded: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
         };
 
-        addActivity(newActivity);
+        await addActivity(newActivity);
         setSubmitted(true);
 
         if (typesSelected < 2) {
