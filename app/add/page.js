@@ -11,6 +11,12 @@ const CURIOSITY_TYPES = [
     { key: 'mapmaker', label: '🗺️ Mapmaker', desc: 'Epistemic Curiosity: Organizing, systems', colorClass: 'mapmaker' },
 ];
 
+const MOVEMENT_TYPES = [
+    { key: 'grossMotor', label: '🏃 Gross Motor', desc: 'Large muscle movement: running, jumping, climbing', colorClass: 'gross' },
+    { key: 'fineMotor', label: '✂️ Fine Motor', desc: 'Small muscle control: cutting, drawing, threading', colorClass: 'fine' },
+    { key: 'outdoor', label: '🌳 Outdoor', desc: 'Takes place or works best outside', colorClass: 'outdoor' },
+];
+
 const ENERGY_OPTIONS = [
     { value: 'Amp', label: '⚡ Amp It Up', desc: 'Jumping, heavy work, big movement', selClass: 'selected-amp' },
     { value: 'Calm', label: '🧘 Calm It Down', desc: 'Deep breathing, quiet spaces, sensory', selClass: 'selected-calm' },
@@ -29,6 +35,9 @@ export default function AddPage() {
         artist: false,
         detective: false,
         mapmaker: false,
+        grossMotor: false,
+        fineMotor: false,
+        outdoor: false,
         energyLevel: '',
         rating: 0,
         fileName: '',
@@ -67,7 +76,7 @@ export default function AddPage() {
     };
 
     const handleReset = () => {
-        setForm({ title: '', notes: '', explorer: false, artist: false, detective: false, mapmaker: false, energyLevel: '', rating: 0, fileName: '' });
+        setForm({ title: '', notes: '', explorer: false, artist: false, detective: false, mapmaker: false, grossMotor: false, fineMotor: false, outdoor: false, energyLevel: '', rating: 0, fileName: '' });
         setSubmitted(false);
         setTip('');
         setError('');
@@ -184,9 +193,35 @@ export default function AddPage() {
                     )}
                 </div>
 
+                {/* Movement / Setting Types */}
+                <div className="card" style={{ marginBottom: 20 }}>
+                    <p className="section-title">2. 🏃 Movement & Setting</p>
+                    <p className="section-caption">Select all that apply — activities can include multiple!</p>
+                    <div className="checkbox-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                        {MOVEMENT_TYPES.map(type => (
+                            <label
+                                key={type.key}
+                                className={`checkbox-card ${form[type.key] ? `checked ${type.colorClass}` : ''}`}
+                                htmlFor={`type-${type.key}`}
+                            >
+                                <input
+                                    type="checkbox"
+                                    id={`type-${type.key}`}
+                                    checked={form[type.key]}
+                                    onChange={() => toggle(type.key)}
+                                />
+                                <div className="checkbox-content">
+                                    <strong>{type.label}</strong>
+                                    <small>{type.desc}</small>
+                                </div>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Energy Level */}
                 <div className="card" style={{ marginBottom: 20 }}>
-                    <p className="section-title">2. ⚡ Regulation Station (Energy Level)</p>
+                    <p className="section-title">3. ⚡ Regulation Station (Energy Level)</p>
                     <p className="section-caption">Does this activity amp kids up or calm them down?</p>
                     <div className="radio-group">
                         {ENERGY_OPTIONS.map(opt => (
@@ -213,14 +248,14 @@ export default function AddPage() {
 
                 {/* Rating */}
                 <div className="card" style={{ marginBottom: 20 }}>
-                    <p className="section-title">3. ⭐ How Did It Go?</p>
+                    <p className="section-title">4. ⭐ How Did It Go?</p>
                     <p className="section-caption">Rate this activity after you've tried it with the kids.</p>
                     <StarRating value={form.rating} onChange={r => setForm(f => ({ ...f, rating: r }))} />
                 </div>
 
                 {/* Notes */}
                 <div className="card" style={{ marginBottom: 24 }}>
-                    <p className="section-title">4. 📝 Reflection Notes</p>
+                    <p className="section-title">5. 📝 Reflection Notes</p>
                     <p className="section-caption">e.g., Which curiosity type did you support most? What worked?</p>
                     <textarea
                         className="form-textarea"

@@ -28,13 +28,16 @@
   --radius-sm: 10px;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -196,7 +199,7 @@ body {
 .form-textarea,
 .form-select {
   width: 100%;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
@@ -295,6 +298,21 @@ body {
 .checkbox-card.checked.mapmaker {
   border-color: var(--violet);
   background: var(--violet-soft);
+}
+
+.checkbox-card.checked.gross {
+  border-color: #fb923c;
+  background: rgba(251, 146, 60, 0.12);
+}
+
+.checkbox-card.checked.fine {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.checkbox-card.checked.outdoor {
+  border-color: #a3e635;
+  background: rgba(163, 230, 53, 0.12);
 }
 
 .checkbox-card input[type="checkbox"] {
@@ -468,13 +486,65 @@ body {
   font-weight: 600;
 }
 
-.badge-explorer { background: var(--green-soft); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
-.badge-artist   { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
-.badge-detective{ background: var(--teal-soft);  color: var(--teal);  border: 1px solid rgba(45,212,191,0.3); }
-.badge-mapmaker { background: var(--violet-soft);color: var(--violet);border: 1px solid rgba(167,139,250,0.3); }
-.badge-amp      { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
-.badge-calm     { background: var(--teal-soft);  color: var(--teal);  border: 1px solid rgba(45,212,191,0.3); }
-.badge-neutral  { background: var(--violet-soft);color: var(--violet);border: 1px solid rgba(167,139,250,0.3); }
+.badge-explorer {
+  background: var(--green-soft);
+  color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.badge-artist {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.badge-detective {
+  background: var(--teal-soft);
+  color: var(--teal);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.badge-mapmaker {
+  background: var(--violet-soft);
+  color: var(--violet);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.badge-amp {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.badge-calm {
+  background: var(--teal-soft);
+  color: var(--teal);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.badge-neutral {
+  background: var(--violet-soft);
+  color: var(--violet);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.badge-grossMotor {
+  background: rgba(251, 146, 60, 0.12);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.badge-fineMotor {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.badge-outdoor {
+  background: rgba(163, 230, 53, 0.12);
+  color: #a3e635;
+  border: 1px solid rgba(163, 230, 53, 0.3);
+}
 
 /* ─── Alerts ─────────────────────────────── */
 .alert {
@@ -635,11 +705,53 @@ body {
   color: var(--text-primary);
 }
 
-.filter-btn.active-explorer { background: var(--green-soft); border-color: var(--green); color: var(--green); }
-.filter-btn.active-artist   { background: var(--amber-soft); border-color: var(--amber);  color: var(--amber); }
-.filter-btn.active-detective{ background: var(--teal-soft);  border-color: var(--teal);   color: var(--teal); }
-.filter-btn.active-mapmaker { background: var(--violet-soft);border-color: var(--violet); color: var(--violet); }
-.filter-btn.active-all      { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.filter-btn.active-explorer {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.filter-btn.active-artist {
+  background: var(--amber-soft);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.filter-btn.active-detective {
+  background: var(--teal-soft);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.filter-btn.active-mapmaker {
+  background: var(--violet-soft);
+  border-color: var(--violet);
+  color: var(--violet);
+}
+
+.filter-btn.active-grossMotor {
+  background: rgba(251, 146, 60, 0.12);
+  border-color: #fb923c;
+  color: #fb923c;
+}
+
+.filter-btn.active-fineMotor {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.filter-btn.active-outdoor {
+  background: rgba(163, 230, 53, 0.12);
+  border-color: #a3e635;
+  color: #a3e635;
+}
+
+.filter-btn.active-all {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green);
+}
 
 /* ─── Empty State ─────────────────────────── */
 .empty-state {
@@ -705,7 +817,7 @@ body {
   font-size: 0.9rem;
   color: var(--rose);
   text-decoration: line-through;
-  text-decoration-color: rgba(248,113,113,0.4);
+  text-decoration-color: rgba(248, 113, 113, 0.4);
 }
 
 .phrase-arrow {
@@ -723,7 +835,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
@@ -775,16 +887,20 @@ body {
     flex-wrap: wrap;
     padding: 16px;
   }
+
   .main-content {
     margin-left: 0;
     padding: 20px;
   }
+
   .checkbox-grid {
     grid-template-columns: 1fr;
   }
+
   .app-shell {
     flex-direction: column;
   }
+
   .phrase-row {
     grid-template-columns: 1fr;
   }
@@ -792,18 +908,40 @@ body {
 
 /* ─── Animations ─────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pop {
-  0%   { transform: scale(0.95); opacity: 0; }
-  60%  { transform: scale(1.03); }
-  100% { transform: scale(1);    opacity: 1; }
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.fade-in { animation: fadeIn 0.3s ease forwards; }
-.pop-in  { animation: pop  0.35s ease forwards; }
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.pop-in {
+  animation: pop 0.35s ease forwards;
+}
 
 /* ─── File Upload ─────────────────────────── */
 .file-upload-zone {
@@ -852,7 +990,7 @@ body {
   gap: 10px;
   padding: 12px 16px;
   background: var(--green-soft);
-  border: 1px solid rgba(74,222,128,0.3);
+  border: 1px solid rgba(74, 222, 128, 0.3);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   color: var(--green);

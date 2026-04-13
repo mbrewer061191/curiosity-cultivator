@@ -3,8 +3,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useActivities } from '../hooks/useActivities';
 
-const TYPE_ICONS = { explorer: '🌿', artist: '🎨', detective: '🔎', mapmaker: '🗺️' };
-const TYPE_LABELS = { explorer: 'Explorer', artist: 'Artist', detective: 'Detective', mapmaker: 'Mapmaker' };
+const TYPE_ICONS = { explorer: '🌿', artist: '🎨', detective: '🔎', mapmaker: '🗺️', grossMotor: '🏃', fineMotor: '✂️', outdoor: '🌳' };
+const TYPE_LABELS = { explorer: 'Explorer', artist: 'Artist', detective: 'Detective', mapmaker: 'Mapmaker', grossMotor: 'Gross Motor', fineMotor: 'Fine Motor', outdoor: 'Outdoor' };
 const ENERGY_MAP = { Amp: '⚡ Amp It Up', Calm: '🧘 Calm It Down', Neutral: '➖ Neutral' };
 
 export default function LibraryPage() {
@@ -64,7 +64,7 @@ export default function LibraryPage() {
                     {/* Filter Bar */}
                     <div className="filter-bar">
                         <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Filter by type:</span>
-                        {['explorer', 'artist', 'detective', 'mapmaker'].map(type => (
+                        {['explorer', 'artist', 'detective', 'mapmaker', 'grossMotor', 'fineMotor', 'outdoor'].map(type => (
                             <button
                                 key={type}
                                 className={`filter-btn ${activeFilters.includes(type) ? `active-${type}` : ''}`}
@@ -139,6 +139,7 @@ export default function LibraryPage() {
 function ActivityCard({ activity, onDelete }) {
     const [expanded, setExpanded] = useState(false);
     const types = ['explorer', 'artist', 'detective', 'mapmaker'].filter(t => activity[t]);
+    const movementTypes = ['grossMotor', 'fineMotor', 'outdoor'].filter(t => activity[t]);
     const stars = activity.rating || 0;
 
     return (
@@ -162,6 +163,9 @@ function ActivityCard({ activity, onDelete }) {
 
             <div className="activity-card-meta">
                 {types.map(t => (
+                    <span key={t} className={`badge badge-${t}`}>{TYPE_ICONS[t]} {TYPE_LABELS[t]}</span>
+                ))}
+                {movementTypes.map(t => (
                     <span key={t} className={`badge badge-${t}`}>{TYPE_ICONS[t]} {TYPE_LABELS[t]}</span>
                 ))}
                 {activity.energyLevel && activity.energyLevel !== 'Neutral' && (
