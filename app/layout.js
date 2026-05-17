@@ -6,6 +6,7 @@ import './globals.css';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: '🏠' },
+  { href: '/planner', label: 'Planner', icon: '📅' },
   { href: '/add', label: 'Add Activity', icon: '➕' },
   { href: '/library', label: 'Library', icon: '📚' },
   { href: '/cheatsheet', label: 'Quick Reference', icon: '💡' },
