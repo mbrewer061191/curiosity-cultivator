@@ -1,0 +1,1 @@
+alter table activities add column "fileUrl" text;

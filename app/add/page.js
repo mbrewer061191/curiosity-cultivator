@@ -41,6 +41,7 @@ export default function AddPage() {
         energyLevel: '',
         rating: 0,
         fileName: '',
+        fileObj: null,
     });
 
     const [dragOver, setDragOver] = useState(false);
@@ -51,7 +52,7 @@ export default function AddPage() {
     const toggle = (key) => setForm(f => ({ ...f, [key]: !f[key] }));
 
     const handleFile = (file) => {
-        if (file) setForm(f => ({ ...f, fileName: file.name }));
+        if (file) setForm(f => ({ ...f, fileName: file.name, fileObj: file }));
     };
 
     const typesSelected = ['explorer', 'artist', 'detective', 'mapmaker'].filter(t => form[t]).length;
@@ -76,7 +77,7 @@ export default function AddPage() {
     };
 
     const handleReset = () => {
-        setForm({ title: '', notes: '', explorer: false, artist: false, detective: false, mapmaker: false, grossMotor: false, fineMotor: false, outdoor: false, energyLevel: '', rating: 0, fileName: '' });
+        setForm({ title: '', notes: '', explorer: false, artist: false, detective: false, mapmaker: false, grossMotor: false, fineMotor: false, outdoor: false, energyLevel: '', rating: 0, fileName: '', fileObj: null });
         setSubmitted(false);
         setTip('');
         setError('');
@@ -135,7 +136,7 @@ export default function AddPage() {
                             <div className="file-attached">
                                 <span>📎</span>
                                 <span style={{ flex: 1 }}>{form.fileName}</span>
-                                <button type="button" className="btn btn-sm btn-danger" onClick={() => setForm(f => ({ ...f, fileName: '' }))}>Remove</button>
+                                <button type="button" className="btn btn-sm btn-danger" onClick={() => setForm(f => ({ ...f, fileName: '', fileObj: null }))}>Remove</button>
                             </div>
                         ) : (
                             <div

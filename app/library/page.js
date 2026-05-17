@@ -156,7 +156,15 @@ function ActivityCard({ activity, onDelete }) {
                         ))}
                     </div>
                     {activity.fileName && activity.fileName !== 'No file attached' && (
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4, textAlign: 'right' }}>📎 {activity.fileName}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4, textAlign: 'right' }}>
+                            {activity.fileUrl ? (
+                                <a href={activity.fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>
+                                    📎 {activity.fileName}
+                                </a>
+                            ) : (
+                                <span>📎 {activity.fileName}</span>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
