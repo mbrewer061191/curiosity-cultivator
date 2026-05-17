@@ -183,12 +183,34 @@ function ActivityCard({ activity, onDelete }) {
                 )}
             </div>
 
-            {expanded && activity.notes && (
+            {expanded && (
                 <div className="activity-card-notes">
-                    <strong style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Reflection Notes
-                    </strong>
-                    <p style={{ marginTop: 6 }}>{activity.notes}</p>
+                    {activity.supplies && (
+                        <div style={{ marginBottom: 12 }}>
+                            <strong style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                🎒 Supplies Needed
+                            </strong>
+                            <p style={{ marginTop: 6, whiteSpace: 'pre-wrap' }}>{activity.supplies}</p>
+                        </div>
+                    )}
+                    
+                    {activity.instructions && (
+                        <div style={{ marginBottom: 12 }}>
+                            <strong style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                📋 Instructions
+                            </strong>
+                            <p style={{ marginTop: 6, whiteSpace: 'pre-wrap' }}>{activity.instructions}</p>
+                        </div>
+                    )}
+                    
+                    {activity.notes && (
+                        <div>
+                            <strong style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                📝 Reflection Notes
+                            </strong>
+                            <p style={{ marginTop: 6, whiteSpace: 'pre-wrap' }}>{activity.notes}</p>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -197,7 +219,7 @@ function ActivityCard({ activity, onDelete }) {
                     className="btn btn-secondary btn-sm"
                     onClick={() => setExpanded(!expanded)}
                 >
-                    {expanded ? '▲ Less' : '▼ Notes'}
+                    {expanded ? '▲ Less' : '▼ Details'}
                 </button>
                 <button
                     className="btn btn-danger btn-sm"

@@ -31,6 +31,8 @@ export default function AddPage() {
     const [form, setForm] = useState({
         title: '',
         notes: '',
+        supplies: '',
+        instructions: '',
         explorer: false,
         artist: false,
         detective: false,
@@ -77,7 +79,7 @@ export default function AddPage() {
     };
 
     const handleReset = () => {
-        setForm({ title: '', notes: '', explorer: false, artist: false, detective: false, mapmaker: false, grossMotor: false, fineMotor: false, outdoor: false, energyLevel: '', rating: 0, fileName: '', fileObj: null });
+        setForm({ title: '', notes: '', supplies: '', instructions: '', explorer: false, artist: false, detective: false, mapmaker: false, grossMotor: false, fineMotor: false, outdoor: false, energyLevel: '', rating: 0, fileName: '', fileObj: null });
         setSubmitted(false);
         setTip('');
         setError('');
@@ -254,9 +256,33 @@ export default function AddPage() {
                     <StarRating value={form.rating} onChange={r => setForm(f => ({ ...f, rating: r }))} />
                 </div>
 
+                {/* Supplies and Instructions */}
+                <div className="card" style={{ marginBottom: 20 }}>
+                    <p className="section-title">5. 🎒 Supplies Needed</p>
+                    <p className="section-caption">List all materials required for this activity.</p>
+                    <textarea
+                        className="form-textarea"
+                        placeholder="e.g. 2 cups flour, 1 cup salt, food coloring..."
+                        value={form.supplies}
+                        onChange={e => setForm(f => ({ ...f, supplies: e.target.value }))}
+                        id="supplies-notes"
+                        style={{ marginBottom: 24 }}
+                    />
+
+                    <p className="section-title">6. 📋 Instructions</p>
+                    <p className="section-caption">Step-by-step directions for the activity.</p>
+                    <textarea
+                        className="form-textarea"
+                        placeholder="1. Mix dry ingredients... 2. Add water..."
+                        value={form.instructions}
+                        onChange={e => setForm(f => ({ ...f, instructions: e.target.value }))}
+                        id="instructions-notes"
+                    />
+                </div>
+
                 {/* Notes */}
                 <div className="card" style={{ marginBottom: 24 }}>
-                    <p className="section-title">5. 📝 Reflection Notes</p>
+                    <p className="section-title">7. 📝 Reflection Notes</p>
                     <p className="section-caption">e.g., Which curiosity type did you support most? What worked?</p>
                     <textarea
                         className="form-textarea"
