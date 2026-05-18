@@ -2,8 +2,40 @@
 import { useState, useMemo } from 'react';
 import { useActivities } from '../hooks/useActivities';
 import { usePlanner } from '../hooks/usePlanner';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
+function getHoliday(year, month, day) {
+    const fixed = {
+        '0-1': { name: "New Year's Day", icon: '🎆' },
+        '1-14': { name: "Valentine's Day", icon: '💖' },
+        '2-17': { name: "St. Patrick's Day", icon: '☘️' },
+        '3-1': { name: "April Fools", icon: '🃏' },
+        '4-5': { name: "Cinco de Mayo", icon: '🌮' },
+        '5-19': { name: "Juneteenth", icon: '✊🏿' },
+        '6-4': { name: "Independence Day", icon: '🎆' },
+        '9-31': { name: "Halloween", icon: '🎃' },
+        '10-11': { name: "Veterans Day", icon: '🎖️' },
+        '11-25': { name: "Christmas", icon: '🎄' },
+        '11-31': { name: "New Year's Eve", icon: '🥂' },
+    };
+    const key = `${month}-${day}`;
+    if (fixed[key]) return fixed[key];
+
+    const date = new Date(year, month, day);
+    const dayOfWeek = date.getDay();
+    const nthWeek = Math.floor((day - 1) / 7) + 1;
+    const isLastWeek = day + 7 > new Date(year, month + 1, 0).getDate();
+
+    if (month === 4 && dayOfWeek === 0 && nthWeek === 2) return { name: "Mother's Day", icon: '💐' };
+    if (month === 5 && dayOfWeek === 0 && nthWeek === 3) return { name: "Father's Day", icon: '👔' };
+    if (month === 10 && dayOfWeek === 4 && nthWeek === 4) return { name: "Thanksgiving", icon: '🦃' };
+    if (month === 4 && dayOfWeek === 1 && isLastWeek) return { name: "Memorial Day", icon: '🇺🇸' };
+    if (month === 8 && dayOfWeek === 1 && nthWeek === 1) return { name: "Labor Day", icon: '🛠️' };
+    if (month === 0 && dayOfWeek === 1 && nthWeek === 3) return { name: "MLK Jr. Day", icon: '🕊️' };
+    if (month === 1 && dayOfWeek === 1 && nthWeek === 3) return { name: "Presidents' Day", icon: '🏛️' };
+
+    return null;
+}
 export default function PlannerPage() {
     const { activities, loaded: actsLoaded } = useActivities();
     
@@ -65,51 +97,93 @@ export default function PlannerPage() {
 
     const handleExportPDF = async () => {
         try {
-            // Load base PDF
             const url = '/lesson_plan_template.pdf';
             const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
             const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
             const pages = pdfDoc.getPages();
-            const firstPage = pages[0]; // Assuming it's a 1-page template
+            const firstPage = pages[0]; 
 
-            // We will draw text onto the PDF. Since we don't have exact coordinates, 
-            // we will approximate some fields or append a new page with the details.
-            // Since the user said it's a template she fills out, let's list the planned activities.
-            let yOffset = firstPage.getHeight() - 150;
-            
+            // Header positioning - Move this so it doesn't overlap "Individualizations"
+            // The template header seems to have space around y = height - 60
             firstPage.drawText(`Lesson Plan: ${currentMonth + 1}/${currentYear}`, {
-                x: 50,
-                y: firstPage.getHeight() - 50,
-                size: 16,
+                x: 60,
+                y: firstPage.getHeight() - 75,
+                size: 14,
+                font: font,
                 color: rgb(0, 0, 0),
             });
 
-            // Very basic text drawing since we don't know the exact bounding boxes
-            // We will iterate through planned activities and list them
+            // The table starts lower. Based on the screenshot, y=height - 135 seems to be the first row baseline.
+            // Row height is exactly 15.
+            let yOffset = firstPage.getHeight() - 135;
+            
             const sortedPlanned = [...planned].sort((a, b) => a.date.localeCompare(b.date));
+            
+            // Helper to wrap text
+            const wrapText = (text, maxWidth, fontSize) => {
+                const words = text.split(' ');
+                let lines = [];
+                let currentLine = words[0] || '';
+
+                for (let i = 1; i < words.length; i++) {
+                    const word = words[i];
+                    const width = font.widthOfTextAtSize(currentLine + " " + word, fontSize);
+                    if (width < maxWidth) {
+                        currentLine += " " + word;
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
+                return lines;
+            };
+
             for (const p of sortedPlanned) {
                 const act = activities.find(a => a.id === p.activity_id);
                 if (!act) continue;
                 
-                firstPage.drawText(`${p.date}: ${act.title}`, {
-                    x: 50,
-                    y: yOffset,
-                    size: 12,
-                    color: rgb(0.1, 0.1, 0.8),
-                });
+                // Collect skills
+                const skills = [];
+                ['explorer', 'artist', 'detective', 'mapmaker'].forEach(k => { if (act[k]) skills.push(k.charAt(0).toUpperCase() + k.slice(1)); });
+                ['grossMotor', 'fineMotor', 'outdoor'].forEach(k => { if (act[k]) skills.push(k.replace('Motor', ' Motor')); });
+                const skillText = skills.length > 0 ? skills.join(', ') : 'General';
                 
-                if (act.notes) {
-                    yOffset -= 15;
-                    // Truncate notes if too long for simple drawing
-                    firstPage.drawText(`   Notes: ${act.notes.substring(0, 80)}...`, {
-                        x: 50,
-                        y: yOffset,
-                        size: 10,
-                    });
+                // Prepare column content
+                // Col 1: Date (x: 55, width: 110)
+                const dateText = p.date.split('-').slice(1).join('/'); // "05-01" -> "05/01"
+                
+                // Col 2: Skill (x: 175, width: 140)
+                const skillLines = wrapText(skillText, 135, 10);
+                
+                // Col 3: Activity (x: 325, width: 230)
+                const actText = `${act.title}${act.notes ? ' - ' + act.notes : ''}`;
+                const actLines = wrapText(actText, 220, 10);
+                
+                // Determine how many rows this entry will take
+                const maxLines = Math.max(1, skillLines.length, actLines.length);
+                
+                // Draw cells
+                for (let i = 0; i < maxLines; i++) {
+                    // Col 1 (only on first line)
+                    if (i === 0) {
+                        firstPage.drawText(dateText, { x: 55, y: yOffset, size: 10, font });
+                    }
+                    // Col 2
+                    if (skillLines[i]) {
+                        firstPage.drawText(skillLines[i], { x: 175, y: yOffset, size: 10, font });
+                    }
+                    // Col 3
+                    if (actLines[i]) {
+                        firstPage.drawText(actLines[i], { x: 325, y: yOffset, size: 10, font });
+                    }
+                    
+                    yOffset -= 15; // Move down 1 row
+                    if (yOffset < 50) break; 
                 }
                 
-                yOffset -= 25;
-                if (yOffset < 50) break; // Out of space on page 1
+                if (yOffset < 50) break; // Out of space
             }
 
             const pdfBytes = await pdfDoc.save();
@@ -164,6 +238,7 @@ export default function PlannerPage() {
                             const dateStr = `${monthYearString}-${String(day).padStart(2, '0')}`;
                             const isSelected = selectedDate === dateStr;
                             const dayPlanned = plannedMap[dateStr] || [];
+                            const holiday = getHoliday(currentYear, currentMonth, day);
                             
                             return (
                                 <div 
@@ -171,21 +246,32 @@ export default function PlannerPage() {
                                     onClick={() => handleDateClick(day)}
                                     style={{ 
                                         padding: '10px 5px', 
-                                        background: isSelected ? 'var(--primary-color)' : '#fff', 
+                                        background: isSelected ? 'var(--primary-color)' : (holiday ? '#f0f9ff' : '#fff'), 
                                         color: isSelected ? '#fff' : '#333',
-                                        border: '1px solid #ddd', 
-                                        borderRadius: 8, 
+                                        border: isSelected ? '1px solid var(--primary-color)' : (holiday ? '1px solid #bae6fd' : '1px solid #e5e7eb'), 
+                                        borderRadius: 12, 
                                         cursor: 'pointer',
-                                        minHeight: 80,
+                                        minHeight: 100,
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        boxShadow: holiday && !isSelected ? '0 2px 4px rgba(0,0,0,0.02)' : 'none',
+                                        transition: 'all 0.2s ease',
                                     }}
+                                    className="calendar-day"
                                 >
-                                    <span style={{ fontWeight: 'bold' }}>{day}</span>
+                                    <span style={{ fontWeight: '600', fontSize: '1.1rem' }}>{day}</span>
+                                    {holiday && (
+                                        <div style={{ fontSize: '0.7rem', textAlign: 'center', marginTop: 'auto', color: isSelected ? '#e0f2fe' : '#0284c7', fontWeight: 500, lineHeight: 1.2 }}>
+                                            <span style={{ fontSize: '1.2rem', display: 'block', marginBottom: 2 }}>{holiday.icon}</span>
+                                            {holiday.name}
+                                        </div>
+                                    )}
                                     {dayPlanned.length > 0 && (
-                                        <div style={{ marginTop: 4, fontSize: '0.7rem', background: isSelected ? 'rgba(255,255,255,0.2)' : 'var(--primary-color)', color: isSelected ? '#fff' : '#fff', padding: '2px 6px', borderRadius: 12 }}>
-                                            {dayPlanned.length} act.
+                                        <div style={{ marginTop: 'auto', marginBottom: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                            <div style={{ fontSize: '0.7rem', background: isSelected ? 'rgba(255,255,255,0.25)' : 'var(--primary-color)', color: '#fff', padding: '3px 8px', borderRadius: 12, fontWeight: 'bold' }}>
+                                                {dayPlanned.length} act.
+                                            </div>
                                         </div>
                                     )}
                                 </div>
